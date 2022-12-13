@@ -5,47 +5,55 @@ use crate::vec3::{dot, Vec3};
 pub struct HitRecord {
 	pub parameter: f64,
 	pub hit_point: Vec3,
-	pub normal: Vec3
+	pub normal: Vec3,
+	pub is_hit: bool
 }
 
 pub trait Hittable {
-	fn hit (self, ray : Ray, t_min : f64, t_max : f64, mut hit_record : HitRecord) -> bool;
+	fn hit (&self, ray : Ray, t_min : f64, t_max : f64) -> HitRecord;
 }
 
+#[derive(Clone, Copy)]
 pub struct Sphere {
-	centre : Vec3,
-	radius : f64
+	pub centre : Vec3,
+	pub radius : f64
 }
 
 impl Hittable for Sphere {
-	fn hit(self, ray: Ray, t_min: f64, t_max: f64, mut hit_record: HitRecord) -> bool {
-		let oc = ray.start_point -centre;
+	fn hit(&self, ray: Ray, t_min: f64, t_max: f64) -> HitRecord {
+		let mut temp_hit_record : HitRecord = HitRecord {
+			parameter: 0.0,
+			hit_point: Vec3(0.0, 0.0, 0.0),
+			normal: Vec3(0.0, 0.0, 0.0),
+			is_hit: false
+		};
+		let oc = ray.start_point - self.centre;
 		let a = dot(ray.ray_direction, ray.ray_direction);
 		let b = dot(oc, ray.ray_direction);
-		let c = dot(oc,oc) - radius*radius;
+		let c = dot(oc,oc) - self.radius*self.radius;
 		let discriminant = b*b - a*c;
-		if discriminant > 0 {
-			let mut temp = ((-b - (b * b - a * c).sqrt()) / a);
-			if temp < t_max && temp > t_min {
-				hit_record.parameter = temp;
-				hit_record.hit_point = ray.end_point(temp);
-				hit_record.normal = (hit_record.hit_point - self.centre) / self.radius;
-				return true
+		if discriminant > 0. {
+			let temp1 = (-b - (b * b - a * c).sqrt()) / a;
+			if temp1 < t_max && temp1 > t_min {
+				temp_hit_record.parameter = temp1;
+				temp_hit_record.hit_point = ray.end_point(temp1);
+				temp_hit_record.normal = (temp_hit_record.hit_point - self.centre) / self.radius;
+				temp_hit_record.is_hit =true;
+				return temp_hit_record;
 			}
-			temp = ((-b + (b * b - a * c).sqrt()) / a);
-			if temp < t_max && temp > t_min {
-				hit_record.parameter = temp;
-				hit_record.hit_point = ray.end_point(temp);
-				hit_record.normal = (hit_record.hit_point - self.centre) / self.radius;
-				return true
+			let temp2 = (-b + (b * b - a * c).sqrt()) / a;
+			if temp2 < t_max && temp2 > t_min {
+				temp_hit_record.parameter = temp2;
+				temp_hit_record.hit_point = ray.end_point(temp2);
+				temp_hit_record.normal = (temp_hit_record.hit_point - self.centre) / self.radius;
+				temp_hit_record.is_hit =true;
+				return temp_hit_record;
 			}
 		}
-		return false
+		return temp_hit_record;
 	}
 }
 
-pub struct HittableTable {
-	
-}
+
 
 
