@@ -10,7 +10,7 @@ pub struct HitRecord {
 }
 
 pub trait Hittable {
-	fn hit (&self, ray : Ray, t_min : f64, t_max : f64) -> HitRecord;
+	fn hit_result (&self, ray : Ray, t_min : f64, t_max : f64) -> HitRecord;
 }
 
 #[derive(Clone, Copy)]
@@ -20,7 +20,7 @@ pub struct Sphere {
 }
 
 impl Hittable for Sphere {
-	fn hit(&self, ray: Ray, t_min: f64, t_max: f64) -> HitRecord {
+	fn hit_result(&self, ray: Ray, t_min: f64, t_max: f64) -> HitRecord {
 		let mut temp_hit_record : HitRecord = HitRecord {
 			parameter: 0.0,
 			hit_point: Vec3(0.0, 0.0, 0.0),
@@ -28,9 +28,9 @@ impl Hittable for Sphere {
 			is_hit: false
 		};
 		let oc = ray.start_point - self.centre;
-		let a = dot(ray.ray_direction, ray.ray_direction);
-		let b = dot(oc, ray.ray_direction);
-		let c = dot(oc,oc) - self.radius*self.radius;
+		let a = dot(&ray.ray_direction, &ray.ray_direction);
+		let b = dot(&oc, &ray.ray_direction);
+		let c = dot(&oc,&oc) - self.radius*self.radius;
 		let discriminant = b*b - a*c;
 		if discriminant > 0. {
 			let temp1 = (-b - (b * b - a * c).sqrt()) / a;

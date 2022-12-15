@@ -10,10 +10,11 @@ impl Vec3 {
     pub fn r(&self) -> f64 { self.0 }
     pub fn g(&self) -> f64 { self.1 }
     pub fn b(&self) -> f64 { self.2 }
-    pub fn length(self) -> f64 {
+    pub fn length(&self) -> f64 {
         (self.0 * self.0 + self.1 * self.1 + self.2 * self.2).sqrt()
     }
-    pub fn unit_vec(self) -> Vec3 { Vec3(self.0 / self.length(), self.1 / self.length(), self.2 / self.length()) }
+    pub fn unit_vec(&self) -> Vec3 { Vec3(self.0 / self.length(), self.1 / self.length(), self.2 / self.length()) }
+    pub fn zero_vec() -> Vec3 { Vec3 (0.,0.,0.)}
 }
 
 impl ops::Add<Vec3> for Vec3 {
@@ -25,6 +26,12 @@ impl ops::Add<Vec3> for Vec3 {
         new_vec.1 = self.1 + _rhs.1;
         new_vec.2 = self.2 + _rhs.2;
         new_vec
+    }
+}
+
+impl ops::AddAssign<Vec3> for Vec3 {
+    fn add_assign(&mut self, rhs: Vec3) {
+        *self = Vec3(self.0+rhs.0,self.1+rhs.1,self.2+rhs.2);
     }
 }
 
@@ -100,10 +107,16 @@ impl ops::Div<Vec3> for Vec3 {
     }
 }
 
-pub fn dot(vec1: Vec3, vec2: Vec3) -> f64 {
+impl ops::DivAssign<f64> for Vec3 {
+    fn div_assign(&mut self, rhs: f64) {
+        *self = Vec3(self.0/rhs,self.1/rhs,self.2/rhs);
+    }
+}
+
+pub fn dot(vec1: &Vec3, vec2: &Vec3) -> f64 {
     vec1.0 * vec2.0 + vec1.1 * vec2.1 + vec1.2 * vec2.2
 }
 
-pub fn cross(vec1: Vec3, vec2: Vec3) -> Vec3 {
+pub fn cross(vec1: &Vec3, vec2: &Vec3) -> Vec3 {
     Vec3(vec1.1 * vec2.2 - vec1.2 * vec2.1, vec1.2 * vec2.0 - vec1.0 * vec2.2, vec1.0 * vec2.1 - vec1.1 * vec2.0)
 }

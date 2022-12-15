@@ -8,7 +8,7 @@ pub struct HittableTable {
 }
 
 impl Hittable for HittableTable {
-	fn hit(&self, ray: Ray, t_min: f64, t_max: f64) -> HitRecord {
+	fn hit_result(&self, ray: Ray, t_min: f64, t_max: f64) -> HitRecord {
 		let mut temp_hit_record : HitRecord = HitRecord {
 			parameter: 0.0,
 			hit_point: Vec3(0.0, 0.0, 0.0),
@@ -17,7 +17,7 @@ impl Hittable for HittableTable {
 		};
 		let mut closest_so_far = t_max;
 		for item_number in 0..(self.list_size()) {
-			let mut temp_temp_hit_record = self.object_list[item_number].hit(ray, t_min, closest_so_far);
+			let temp_temp_hit_record = self.object_list[item_number].hit_result(ray, t_min, closest_so_far);
 			if temp_temp_hit_record.is_hit {
 				temp_hit_record = temp_temp_hit_record;
 				closest_so_far = temp_temp_hit_record.parameter;
